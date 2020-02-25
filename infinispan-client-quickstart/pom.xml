@@ -8,6 +8,12 @@
     <artifactId>infinispan-client-quickstart</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <parent>
+        <groupId>io.quarkus.quickstarts</groupId>
+        <artifactId>quickstart-projects</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
     <properties>
         <quarkus.version>999-SNAPSHOT</quarkus.version>
         <surefire-plugin.version>2.22.1</surefire-plugin.version>

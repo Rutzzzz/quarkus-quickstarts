@@ -6,6 +6,13 @@
   <artifactId>kafka-streams-quickstart</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+
+  <parent>
+    <groupId>io.quarkus.quickstarts</groupId>
+    <artifactId>quickstart-projects</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
   <modules>
     <module>producer</module>
     <module>aggregator</module>
