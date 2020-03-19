@@ -6,7 +6,7 @@ with a front-end based on Angular so you can play with it from your browser.
 While the code is surprisingly simple, under the hood this is using:
  - RESTEasy to expose the REST endpoints
  - Hibernate ORM to perform the CRUD operations on the database
- - A PostgreSQL database; see below to run one via Docker
+ - A PostgreSQL|MariaDB|MySQL database; see below to run one via Docker
  - ArC, the CDI inspired dependency injection tool with zero overhead
  - The high performance Agroal connection pool
  - Infinispan based caching
@@ -19,7 +19,7 @@ To compile and run this demo you will need:
 - JDK 1.8+
 - GraalVM
 
-In addition, you will need either a PostgreSQL database, or Docker to run one.
+In addition, you will need a database - PostgreSQL, MariaDB or MySQL, or Docker to run one.
 
 ### Configuring GraalVM and JDK 1.8+
 
@@ -33,15 +33,25 @@ for help setting up your environment.
 
 Launch the Maven build on the checked out sources of this demo:
 
-> ./mvnw install
+> ./mvnw clean install -Dquarkus.profile=<postgres|mariadb|mysql> -Dquarkus.test.profile=<postgres|mariadb|mysql>
 
 ## Running the demo
 
-### Prepare a PostgreSQL instance
+### Prepare a database instance
 
-Make sure you have a PostgreSQL instance running. To set up a PostgreSQL database with Docker:
+Make sure you have a database instance running - one of PostgreSQL, MariaDB or MySQL.
 
-> docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:10.5
+To set up a PostgreSQL database with Docker:
+
+> docker run --ulimit memlock=-1:-1 -d -it --memory-swappiness=0 --name postgres -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:10.5
+
+To set up a MariaDB database with Docker:
+
+> docker run --ulimit memlock=-1:-1 -d -it --memory-swappiness=0 --name mariadb -e MYSQL_USER=quarkus_test -e MYSQL_PASSWORD=quarkus_test -e MYSQL_DATABASE=quarkus_test -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -p 3306:3306 mariadb:10.3
+
+To set up a MySQL database with Docker:
+
+> docker run --ulimit memlock=-1:-1 -d -it --memory-swappiness=0 --name mysql -e MYSQL_USER=quarkus_test -e MYSQL_PASSWORD=quarkus_test -e MYSQL_DATABASE=quarkus_test -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -p 3306:3306 mysql:8.0
 
 Connection properties for the Agroal datasource are defined in the standard Quarkus configuration file,
 `src/main/resources/application.properties`.
@@ -51,7 +61,7 @@ Connection properties for the Agroal datasource are defined in the standard Quar
 The Maven Quarkus plugin provides a development mode that supports
 live coding. To try this out:
 
-> ./mvnw quarkus:dev
+> ./mvnw clean quarkus:dev -Dquarkus.profile=<postgres|mariadb|mysql>
 
 In this mode you can make changes to the code and have the changes immediately applied, by just refreshing your browser.
 
@@ -65,7 +75,7 @@ conventional jar file.
 
 First compile it:
 
-> ./mvnw install
+> ./mvnw clean install -Dquarkus.profile=<postgres|mariadb|mysql> -Dquarkus.test.profile=<postgres|mariadb|mysql>
 
 Then run it:
 
@@ -85,7 +95,7 @@ Compiling a native executable takes a bit longer, as GraalVM performs additional
 steps to remove unnecessary codepaths. Use the  `native` profile to compile a
 native executable:
 
-> ./mvnw install -Dnative
+> ./mvnw install -Dnative -Dquarkus.profile=<postgres|mariadb|mysql> -Dquarkus.test.profile=<postgres|mariadb|mysql>
 
 After getting a cup of coffee, you'll be able to run this binary directly:
 
@@ -99,7 +109,7 @@ Next, maybe you're ready to measure how much memory this service is consuming.
 
 N.B. This implies all dependencies have been compiled to native;
 that's a whole lot of stuff: from the bytecode enhancements that Hibernate ORM
-applies to your entities, to the lower level essential components such as the PostgreSQL JDBC driver, the Undertow webserver.
+applies to your entities, to the lower level essential components such as the jdbc driver, the Undertow webserver.
 
 ## See the demo in your browser
 
@@ -118,4 +128,12 @@ Then, rebuild demo docker image with a system property that points to the DB.
 
 ```bash
 -Dquarkus.datasource.jdbc.url=jdbc:postgresql://<DB_SERVICE_NAME>/quarkus_test
+```
+
+```bash
+-Dquarkus.datasource.jdbc.url=jdbc:mariadb://<DB_SERVICE_NAME>/quarkus_test
+```
+
+```bash
+-Dquarkus.datasource.jdbc.url=jdbc:mysql://<DB_SERVICE_NAME>/quarkus_test
 ```
